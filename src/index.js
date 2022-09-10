@@ -120,13 +120,13 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   todos.done = true
 
-  return response.status(201).json({msg:"Alteração Feita"})
+  return response.json(todos)
 
   // Complete aqui
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  const { user  } = request
+  const { user } = request
   const { id } = request.params
 
   const todos = user.todos.find((todos) => todos.id === id)
@@ -137,7 +137,7 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   
   user.todos.splice(todos,1)
 
-  return response.status(204)
+  return response.status(204).json()
 
   // Complete aqui
 });
