@@ -41,7 +41,7 @@ app.post('/users', (request, response) => {
   const userAlreadyExists = users.some((users)  => users.username === username)
 
   if(userAlreadyExists){
-      return response.status(404).json({msg:"Usuario ja existe "})
+      return response.status(404).json({error:"Usuario ja existe "})
   }
 
     users.push({
@@ -59,7 +59,7 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 
     const {user} = request
 
-    return response.json(user.todos)
+    return response.status(200).json(user.todos)
   // Complete aqui
 }); //ok
 
@@ -94,6 +94,10 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
 
     const todos = user.todos.find((todos) => todos.id === id)
 
+    if(!todos){
+      return response.status(404).json({msg:"Todo não encontrado"})
+    }
+
     todos.title = title
     todos.deadline = deadline
 
@@ -108,6 +112,10 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   const todos = user.todos.find((todos) => todos.id === id)
 
+  if(!todos){
+    return response.status(404).json({msg:"Todo não encontrado"})
+  }
+
   todos.done = true
 
   return response.status(201).json({msg:"Alteração Feita"})
@@ -120,6 +128,10 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { id } = request.params
 
   const todos = user.todos.find((todos) => todos.id === id)
+
+  if(!todos){
+    return response.status(404).json({msg:"Todo não encontrado"})
+  }
   
   user.todos.splice(todos,1)
 
