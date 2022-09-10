@@ -20,7 +20,7 @@ function checksExistsUserAccount(request, response, next) {
     const user = users.find((user) => user.username === username)
 
     if (!user) {
-      return response.status(400).json({ error: "Customer not found" });
+      return response.status(404).json({ error: "Usuario nao encontrado " });
     }
 
     console.log(username)
@@ -41,17 +41,19 @@ app.post('/users', (request, response) => {
   const userAlreadyExists = users.some((users)  => users.username === username)
 
   if(userAlreadyExists){
-      return response.status(404).json({error:"Usuario ja existe "})
+      return response.status(400).json({error:"Usuario ja existe "})
   }
 
-    users.push({
+    const user = {
     username,
     name,
     id:uuidv4(),
     todos:[]
-  })
+  }
 
-  return response.status(201).json({msg:"usuario criado"})
+  users.push(user);
+
+  return response.status(201).json(user)
   // Complete aqui
 });
 
@@ -59,7 +61,7 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 
     const {user} = request
 
-    return response.status(200).json(user.todos)
+    return response.status(201).json(user.todos)
   // Complete aqui
 }); //ok
 
@@ -82,7 +84,7 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
     user.todos.push(task)
 
 
-    return response.status(201).json({msg:"Criado"})
+    return response.status(201).json(task)
 
   // Complete aqui
 });
@@ -95,13 +97,13 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
     const todos = user.todos.find((todos) => todos.id === id)
 
     if(!todos){
-      return response.status(404).json({msg:"Todo não encontrado"})
+      return response.status(404).json({error:"Todo não encontrado"})
     }
 
     todos.title = title
     todos.deadline = deadline
 
-    return response.status(201).json({msg:"Alteração Feita"})
+    return response.status(201).json(todos)
 
   // Complete aqui
 });
@@ -113,7 +115,7 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const todos = user.todos.find((todos) => todos.id === id)
 
   if(!todos){
-    return response.status(404).json({msg:"Todo não encontrado"})
+    return response.status(404).json({error:"Todo não encontrado"})
   }
 
   todos.done = true
@@ -130,10 +132,12 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const todos = user.todos.find((todos) => todos.id === id)
 
   if(!todos){
-    return response.status(404).json({msg:"Todo não encontrado"})
+    return response.status(404).json({error:"Todo não encontrado"})
   }
   
   user.todos.splice(todos,1)
+
+  return response.status(204)
 
   // Complete aqui
 });
